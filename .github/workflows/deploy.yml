@@ -1,0 +1,119 @@
+name: Deploy Windows License Emailer
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '22'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run TypeScript compilation
+      run: npm run build
+
+    - name: Run linting
+      run: npm run lint || echo "Linting not configured yet"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build project
+      run: npm run build
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Setup OpenTofu
+      uses: opentofu/setup-opentofu@v1
+      with:
+        tofu_version: 1.6.0
+
+    - name: OpenTofu Format Check
+      run: tofu fmt -check -recursive
+      working-directory: ./terraform
+
+    - name: OpenTofu Init
+      run: tofu init
+      working-directory: ./terraform
+      env:
+        TF_CLI_CONFIG_FILE: /dev/null
+
+    - name: OpenTofu Plan
+      run: tofu plan -var-file="terraform.tfvars"
+      working-directory: ./terraform
+      env:
+        TF_VAR_smtp_host: ${{ secrets.SMTP_HOST }}
+        TF_VAR_smtp_port: ${{ secrets.SMTP_PORT }}
+        TF_VAR_smtp_secure: ${{ secrets.SMTP_SECURE }}
+        TF_VAR_smtp_user: ${{ secrets.SMTP_USER }}
+        TF_VAR_smtp_pass: ${{ secrets.SMTP_PASS }}
+        TF_VAR_default_from_email: ${{ secrets.DEFAULT_FROM_EMAIL }}
+
+    - name: OpenTofu Apply
+      run: tofu apply -auto-approve -var-file="terraform.tfvars"
+      working-directory: ./terraform
+      env:
+        TF_VAR_smtp_host: ${{ secrets.SMTP_HOST }}
+        TF_VAR_smtp_port: ${{ secrets.SMTP_PORT }}
+        TF_VAR_smtp_secure: ${{ secrets.SMTP_SECURE }}
+        TF_VAR_smtp_user: ${{ secrets.SMTP_USER }}
+        TF_VAR_smtp_pass: ${{ secrets.SMTP_PASS }}
+        TF_VAR_default_from_email: ${{ secrets.DEFAULT_FROM_EMAIL }}
+
+    - name: Get Lambda Function URL
+      id: get-url
+      run: |
+        URL=$(tofu output -raw lambda_function_url)
+        echo "url=$URL" >> $GITHUB_OUTPUT
+        echo "Lambda Function URL: $URL"
+      working-directory: ./terraform
+
+    - name: Comment deployment URL
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 **Deployment successful!**\n\nLambda Function URL: ${{ steps.get-url.outputs.url }}\n\nYou can test the endpoint with:\n\`\`\`bash\ncurl -X POST ${{ steps.get-url.outputs.url }} \\\n  -H "Content-Type: application/json" \\\n  -d '{\n    "templateName": "windows-license",\n    "to": "test@example.com",\n    "from": "noreply@yourcompany.com",\n    "subject": "Test Windows License",\n    "data": {\n      "orderNumber": "1234567890",\n      "customerName": "Test User",\n      "licenseKey": "TEST-KEY-12345"\n    }\n  }'\n\`\`\``
+          })

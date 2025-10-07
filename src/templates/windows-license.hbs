@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orden {{orderNumber}} - Entrega de licencia Windows 11 Pro: Licencia Original</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background-color: #4B0082;
+      color: #fff;
+      padding: 10px 0;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+    .content {
+      padding: 20px;
+    }
+    .content p {
+      margin-bottom: 15px;
+    }
+    .content a {
+      color: #4B0082;
+      text-decoration: none;
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #777;
+    }
+    .license-key {
+      font-size: 1.5em;
+      color: #4B0082;
+      font-weight: bold;
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      margin: 20px 0;
+      border: 2px solid #4B0082;
+    }
+    .instructions {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .contact-info {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Gracias por su compra</h1>
+      <h2>Número de orden {{orderNumber}}</h2>
+    </div>
+    <div class="content">
+      <p>Estimad@ {{customerName}}:</p>
+      <p>Agradecemos mucho su compra de su licencia Windows 11 Pro: Licencia Original.</p>
+      <p><strong>Aquí está su licencia:</strong></p>
+      <div class="license-key">{{licenseKey}}</div>
+     
+      <div class="instructions">
+        <p><strong>Instrucciones de activación:</strong></p>
+        <p>Para obtener ayuda sobre cómo activar Windows, puede revisar el soporte directo de Microsoft:</p>
+        <p><a href="https://support.microsoft.com/es-es/windows/activar-windows-c39005d4-95ee-b91e-b399-2820fda32227" target="_blank">https://support.microsoft.com/es-es/windows/activar-windows-c39005d4-95ee-b91e-b399-2820fda32227</a></p>
+      </div>
+
+      <div class="instructions">
+        <p><strong>Si actualmente tiene una versión Home de Windows:</strong></p>
+        <p>Debe realizar la conversión de su instalación a Pro antes de activarla. Si este es su caso, siga los siguientes pasos:</p>
+        <ol>
+          <li>Desactivar el internet del equipo</li>
+          <li>Cambiar la clave de producto por <strong>VK7JG-NPHTM-C97JM-9MPGT-3V66T</strong> (licencia para instalaciones por volumen)</li>
+          <li>Seguir los pasos que muestre en pantalla mientras se convierte la instalación actual a la nueva versión</li>
+          <li>Al reiniciar, conectar el equipo a internet y realizar la activación con la licencia entregada</li>
+        </ol>
+      </div>
+
+      <p>Si tiene una versión diferente de Windows a la de la licencia, debe realizar la actualización o instalación correspondiente.</p>
+     
+      <div class="contact-info">
+        <p><strong>¿Necesita ayuda?</strong></p>
+        <p>Ante cualquier duda, por favor no dude en contactarnos.</p>
+        <p>Puede contactarnos al <a href="https://wa.me/56934567998">+56 9 3456 7998</a> por WhatsApp o al <a href="mailto:contacto@ivi.cl">contacto@ivi.cl</a></p>
+      </div>
+     
+      <p>Equipo IVI</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2024 Equipo IVI. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "name": "emailer-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda function for sending emails via SMTP with template support",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && npm run copy-templates",
+    "copy-templates": "cp -r src/templates dist/",
+    "watch": "tsc --watch",
+    "package": "npm run build && zip -r emailer-lambda.zip dist/ node_modules/",
+    "dev": "npm run build && nodemon --watch src --exec \"npm run start:dev\"",
+    "start:dev": "NODE_ENV=development node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "deploy": "tofu apply",
+    "plan": "tofu plan",
+    "init": "tofu init"
+  },
+  "keywords": ["aws", "lambda", "smtp", "email", "typescript"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.15",
+    "handlebars": "^4.7.8",
+    "@types/aws-lambda": "^8.10.130",
+    "express": "^4.21.1",
+    "cors": "^2.8.5",
+    "@vendia/serverless-express": "^4.12.4",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/nodemailer": "^6.4.15",
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/jest": "^29.5.14",
+    "@types/supertest": "^6.0.2",
+    "typescript": "^5.7.2",
+    "nodemon": "^3.1.7",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "supertest": "^7.0.0"
+  }
+}
