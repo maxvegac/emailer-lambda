@@ -109,10 +109,10 @@ export class EmailHandler {
 
     const data = request.data as Record<string, unknown>;
 
-    if (!data.orderNumber || !data.customerName || !data.licenseKey) {
+    if (!data.orderNumber || !data.customerName || !data.licenseKey || !data.productName) {
       return {
         valid: false,
-        error: 'Required data fields: orderNumber, customerName, licenseKey',
+        error: 'Required data fields: orderNumber, customerName, licenseKey, productName',
       };
     }
 

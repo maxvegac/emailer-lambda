@@ -28,6 +28,7 @@ describe('Express Server', () => {
         orderNumber: '1234567890',
         customerName: 'Test User',
         licenseKey: 'TEST-KEY-12345',
+        productName: 'Windows 11 Pro: Licencia Original',
       },
     };
 

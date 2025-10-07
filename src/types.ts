@@ -4,6 +4,7 @@ export interface EmailRequest {
     orderNumber: string;
     customerName: string;
     licenseKey: string;
+    productName: string;
   };
   to: string | string[];
   from: string;
