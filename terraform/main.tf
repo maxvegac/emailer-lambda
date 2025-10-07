@@ -60,7 +60,7 @@ data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/.."
   output_path = "${path.module}/lambda_function.zip"
-  excludes    = [
+  excludes = [
     "src/**",
     "tests/**",
     "terraform/**",
@@ -75,7 +75,7 @@ data "archive_file" "lambda_zip" {
     "node_modules/**/*.md",
     "node_modules/**/*.txt"
   ]
-  depends_on  = [null_resource.install_deps]
+  depends_on = [null_resource.install_deps]
 }
 
 # Build the TypeScript project
@@ -92,7 +92,7 @@ resource "null_resource" "build" {
 # Install production dependencies
 resource "null_resource" "install_deps" {
   triggers = {
-    package_json = filemd5("${path.module}/../package.json")
+    package_json      = filemd5("${path.module}/../package.json")
     package_lock_json = filemd5("${path.module}/../package-lock.json")
   }
 
