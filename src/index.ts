@@ -64,8 +64,8 @@ app.use('*', (req, res) => {
   });
 });
 
-// Start server only if not in Lambda environment
-if (process.env.NODE_ENV !== 'lambda') {
+// Start server only if not in Lambda environment and not in test environment
+if (process.env.NODE_ENV !== 'lambda' && process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log('🚀 Windows License Emailer - Local Development Server');
     console.log('==================================================');

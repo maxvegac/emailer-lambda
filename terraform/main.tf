@@ -58,9 +58,24 @@ resource "aws_iam_role_policy_attachment" "lambda_vpc_access" {
 # Archive the source code
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/../dist"
+  source_dir  = "${path.module}/.."
   output_path = "${path.module}/lambda_function.zip"
-  depends_on  = [null_resource.build]
+  excludes    = [
+    "src/**",
+    "tests/**",
+    "terraform/**",
+    "*.md",
+    "*.sh",
+    "*.json",
+    "*.js",
+    "*.cjs",
+    "node_modules/.cache/**",
+    "node_modules/**/test/**",
+    "node_modules/**/tests/**",
+    "node_modules/**/*.md",
+    "node_modules/**/*.txt"
+  ]
+  depends_on  = [null_resource.install_deps]
 }
 
 # Build the TypeScript project
@@ -72,6 +87,20 @@ resource "null_resource" "build" {
   provisioner "local-exec" {
     command = "cd ${path.module}/.. && npm run build"
   }
+}
+
+# Install production dependencies
+resource "null_resource" "install_deps" {
+  triggers = {
+    package_json = filemd5("${path.module}/../package.json")
+    package_lock_json = filemd5("${path.module}/../package-lock.json")
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.module}/.. && npm ci --production"
+  }
+
+  depends_on = [null_resource.build]
 }
 
 # Lambda function

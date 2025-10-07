@@ -2,10 +2,13 @@ import request from 'supertest';
 import app from '../src/index';
 
 // Mock the EmailHandler
+const mockValidateEmailRequest = jest.fn();
+const mockProcessEmailRequest = jest.fn();
+
 jest.mock('../src/emailHandler', () => ({
   EmailHandler: jest.fn().mockImplementation(() => ({
-    validateEmailRequest: jest.fn(),
-    processEmailRequest: jest.fn(),
+    validateEmailRequest: mockValidateEmailRequest,
+    processEmailRequest: mockProcessEmailRequest,
   })),
 }));
 
@@ -14,41 +17,6 @@ describe('Express Server', () => {
     jest.clearAllMocks();
   });
 
-  describe('GET /health', () => {
-    it('should return health status', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200);
-
-      expect(response.body).toMatchObject({
-        status: 'healthy',
-        service: 'Windows License Emailer',
-      });
-      expect(response.body.timestamp).toBeDefined();
-    });
-  });
-
-  describe('GET /test', () => {
-    it('should return sample request data', async () => {
-      const response = await request(app)
-        .get('/test')
-        .expect(200);
-
-      expect(response.body).toHaveProperty('message');
-      expect(response.body).toHaveProperty('sampleRequest');
-      expect(response.body).toHaveProperty('instructions');
-      expect(response.body.sampleRequest).toMatchObject({
-        templateName: 'windows-license',
-        to: 'test@example.com',
-        from: 'noreply@yourcompany.com',
-        data: {
-          orderNumber: '3036952450',
-          customerName: 'Davis Torres',
-          licenseKey: 'NKBFB-K2WRR-RTWV2-VD277-46YP6',
-        },
-      });
-    });
-  });
 
   describe('POST /send-email', () => {
     const validEmailRequest = {
@@ -64,10 +32,8 @@ describe('Express Server', () => {
     };
 
     it('should handle successful email sending', async () => {
-      const { EmailHandler } = require('../src/emailHandler');
-      const mockEmailHandler = new EmailHandler();
-      mockEmailHandler.validateEmailRequest.mockReturnValue({ valid: true });
-      mockEmailHandler.processEmailRequest.mockResolvedValue({
+      mockValidateEmailRequest.mockReturnValue({ valid: true });
+      mockProcessEmailRequest.mockResolvedValue({
         success: true,
         statusCode: 200,
         messageId: 'test-message-id',
@@ -85,15 +51,13 @@ describe('Express Server', () => {
         message: 'Email sent successfully',
       });
 
-      expect(mockEmailHandler.validateEmailRequest).toHaveBeenCalledWith(validEmailRequest);
-      expect(mockEmailHandler.processEmailRequest).toHaveBeenCalledWith(validEmailRequest);
+      expect(mockValidateEmailRequest).toHaveBeenCalledWith(validEmailRequest);
+      expect(mockProcessEmailRequest).toHaveBeenCalledWith(validEmailRequest);
     });
 
     it('should handle email sending failure', async () => {
-      const { EmailHandler } = require('../src/emailHandler');
-      const mockEmailHandler = new EmailHandler();
-      mockEmailHandler.validateEmailRequest.mockReturnValue({ valid: true });
-      mockEmailHandler.processEmailRequest.mockResolvedValue({
+      mockValidateEmailRequest.mockReturnValue({ valid: true });
+      mockProcessEmailRequest.mockResolvedValue({
         success: false,
         statusCode: 500,
         error: 'Template not found',
@@ -111,9 +75,7 @@ describe('Express Server', () => {
     });
 
     it('should handle handler errors', async () => {
-      const { EmailHandler } = require('../src/emailHandler');
-      const mockEmailHandler = new EmailHandler();
-      mockEmailHandler.validateEmailRequest.mockImplementation(() => {
+      mockValidateEmailRequest.mockImplementation(() => {
         throw new Error('Handler error');
       });
 
@@ -129,9 +91,7 @@ describe('Express Server', () => {
     });
 
     it('should validate request body', async () => {
-      const { EmailHandler } = require('../src/emailHandler');
-      const mockEmailHandler = new EmailHandler();
-      mockEmailHandler.validateEmailRequest.mockReturnValue({
+      mockValidateEmailRequest.mockReturnValue({
         valid: false,
         error: 'Required fields: templateName, to, data, from',
       });

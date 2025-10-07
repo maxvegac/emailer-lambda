@@ -75,7 +75,7 @@ describe('Lambda Handler', () => {
       const event = createMockEvent(null);
       delete event.body;
 
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(400);
       const body = JSON.parse(result.body);
@@ -87,7 +87,7 @@ describe('Lambda Handler', () => {
       const event = createMockEvent(null);
       event.body = 'invalid json';
 
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(400);
       const body = JSON.parse(result.body);
@@ -101,7 +101,7 @@ describe('Lambda Handler', () => {
         // missing to, data, from
       });
 
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(400);
       const body = JSON.parse(result.body);
@@ -120,7 +120,7 @@ describe('Lambda Handler', () => {
         },
       });
 
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(400);
       const body = JSON.parse(result.body);
@@ -146,7 +146,7 @@ describe('Lambda Handler', () => {
         },
       });
 
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(500);
       const body = JSON.parse(result.body);
@@ -184,7 +184,7 @@ describe('Lambda Handler', () => {
       mockEmailService.verifyConnection.mockResolvedValue(false);
 
       const event = createMockEvent(validRequest);
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(500);
       const body = JSON.parse(result.body);
@@ -200,7 +200,7 @@ describe('Lambda Handler', () => {
       });
 
       const event = createMockEvent(validRequest);
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(200);
       const body = JSON.parse(result.body);
@@ -217,7 +217,7 @@ describe('Lambda Handler', () => {
       });
 
       const event = createMockEvent(validRequest);
-      const result = await handler(event, mockContext);
+      const result = await handler(event, mockContext, () => {});
 
       expect(result.statusCode).toBe(500);
       const body = JSON.parse(result.body);
