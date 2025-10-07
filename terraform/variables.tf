@@ -64,10 +64,6 @@ variable "smtp_pass" {
   sensitive   = true
 }
 
-variable "default_from_email" {
-  description = "Default from email address"
-  type        = string
-}
 
 # Lambda Function URL configuration
 variable "function_url_cors_origins" {

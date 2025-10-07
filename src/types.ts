@@ -29,5 +29,5 @@ export interface SMTPConfig {
 }
 
 export interface TemplateData {
-  [key: string]: any;
+  [key: string]: unknown;
 }

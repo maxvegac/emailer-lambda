@@ -1,4 +1,4 @@
-import { handler } from '../src/index';
+import { handler } from '../src/lambda';
 import { LambdaFunctionURLEvent, Context } from 'aws-lambda';
 
 // Mock the EmailService

@@ -8,7 +8,6 @@ smtp_port = 587
 smtp_secure = false
 smtp_user = "your-email@gmail.com"
 smtp_pass = "your-app-password"
-default_from_email = "noreply@yourcompany.com"
 
 # Lambda Configuration
 lambda_timeout = 30

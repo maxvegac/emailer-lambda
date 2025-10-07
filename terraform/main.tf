@@ -85,16 +85,15 @@ resource "aws_lambda_function" "emailer" {
   timeout         = var.lambda_timeout
   memory_size     = var.lambda_memory_size
 
-  environment {
-    variables = {
-      SMTP_HOST        = var.smtp_host
-      SMTP_PORT        = var.smtp_port
-      SMTP_SECURE      = var.smtp_secure
-      SMTP_USER        = var.smtp_user
-      SMTP_PASS        = var.smtp_pass
-      DEFAULT_FROM_EMAIL = var.default_from_email
+    environment {
+      variables = {
+        SMTP_HOST        = var.smtp_host
+        SMTP_PORT        = var.smtp_port
+        SMTP_SECURE      = var.smtp_secure
+        SMTP_USER        = var.smtp_user
+        SMTP_PASS        = var.smtp_pass
+      }
     }
-  }
 
   vpc_config {
     subnet_ids         = var.enable_vpc ? var.subnet_ids : []

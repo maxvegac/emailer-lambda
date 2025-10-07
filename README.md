@@ -187,7 +187,6 @@ The Lambda function uses these environment variables:
 - `SMTP_SECURE`: Whether to use secure connection (true/false)
 - `SMTP_USER`: SMTP username
 - `SMTP_PASS`: SMTP password
-- `DEFAULT_FROM_EMAIL`: Default from email address
 
 ## Security Considerations
 

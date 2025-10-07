@@ -15,44 +15,43 @@ app.use(express.urlencoded({ extended: true }));
 app.post('/send-email', async (req, res) => {
   try {
     console.log('📧 Email request received:', JSON.stringify(req.body, null, 2));
-    
+
     const emailHandler = new EmailHandler();
-    
+
     // Validate request
     const validation = emailHandler.validateEmailRequest(req.body);
     if (!validation.valid) {
       return res.status(400).json({
         success: false,
-        error: validation.error
+        error: validation.error,
       });
     }
-    
+
     // Process email
     const result = await emailHandler.processEmailRequest(req.body);
-    
+
     // Send response
     res.status(result.statusCode).json({
       success: result.success,
       messageId: result.messageId,
       error: result.error,
-      message: result.message
+      message: result.message,
     });
-    
   } catch (error) {
     console.error('💥 Error in Express handler:', error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
   console.error('💥 Unhandled error:', err);
   res.status(500).json({
     success: false,
-    error: 'Internal server error'
+    error: 'Internal server error',
   });
 });
 
@@ -61,9 +60,7 @@ app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     error: 'Endpoint not found',
-    availableEndpoints: [
-      'POST /send-email - Send email'
-    ]
+    availableEndpoints: ['POST /send-email - Send email'],
   });
 });
 
@@ -83,14 +80,14 @@ if (process.env.NODE_ENV !== 'lambda') {
     console.log(`   User: ${process.env.SMTP_USER || 'NOT SET'}`);
     console.log(`   Pass: ${process.env.SMTP_PASS ? '***' : 'NOT SET'}`);
     console.log('');
-    
+
     if (!process.env.SMTP_PASS || process.env.SMTP_PASS === 'your-app-password') {
       console.log('⚠️  WARNING: SMTP credentials not configured!');
       console.log('   Create .env file with your SMTP settings');
       console.log('   See env.example for reference');
       console.log('');
     }
-    
+
     console.log('💡 Press Ctrl+C to stop the server');
   });
 }

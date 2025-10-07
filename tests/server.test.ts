@@ -1,9 +1,12 @@
 import request from 'supertest';
-import app from '../src/server';
+import app from '../src/index';
 
-// Mock the handler function
-jest.mock('../src/index', () => ({
-  handler: jest.fn(),
+// Mock the EmailHandler
+jest.mock('../src/emailHandler', () => ({
+  EmailHandler: jest.fn().mockImplementation(() => ({
+    validateEmailRequest: jest.fn(),
+    processEmailRequest: jest.fn(),
+  })),
 }));
 
 describe('Express Server', () => {
@@ -61,15 +64,14 @@ describe('Express Server', () => {
     };
 
     it('should handle successful email sending', async () => {
-      const { handler } = require('../src/index');
-      handler.mockResolvedValue({
+      const { EmailHandler } = require('../src/emailHandler');
+      const mockEmailHandler = new EmailHandler();
+      mockEmailHandler.validateEmailRequest.mockReturnValue({ valid: true });
+      mockEmailHandler.processEmailRequest.mockResolvedValue({
+        success: true,
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          success: true,
-          messageId: 'test-message-id',
-          message: 'Email sent successfully',
-        }),
+        messageId: 'test-message-id',
+        message: 'Email sent successfully',
       });
 
       const response = await request(app)
@@ -83,29 +85,18 @@ describe('Express Server', () => {
         message: 'Email sent successfully',
       });
 
-      expect(handler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          body: JSON.stringify(validEmailRequest),
-          requestContext: expect.objectContaining({
-            http: expect.objectContaining({
-              method: 'POST',
-              path: '/send-email',
-            }),
-          }),
-        }),
-        expect.any(Object)
-      );
+      expect(mockEmailHandler.validateEmailRequest).toHaveBeenCalledWith(validEmailRequest);
+      expect(mockEmailHandler.processEmailRequest).toHaveBeenCalledWith(validEmailRequest);
     });
 
     it('should handle email sending failure', async () => {
-      const { handler } = require('../src/index');
-      handler.mockResolvedValue({
+      const { EmailHandler } = require('../src/emailHandler');
+      const mockEmailHandler = new EmailHandler();
+      mockEmailHandler.validateEmailRequest.mockReturnValue({ valid: true });
+      mockEmailHandler.processEmailRequest.mockResolvedValue({
+        success: false,
         statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          success: false,
-          error: 'Template not found',
-        }),
+        error: 'Template not found',
       });
 
       const response = await request(app)
@@ -120,8 +111,11 @@ describe('Express Server', () => {
     });
 
     it('should handle handler errors', async () => {
-      const { handler } = require('../src/index');
-      handler.mockRejectedValue(new Error('Handler error'));
+      const { EmailHandler } = require('../src/emailHandler');
+      const mockEmailHandler = new EmailHandler();
+      mockEmailHandler.validateEmailRequest.mockImplementation(() => {
+        throw new Error('Handler error');
+      });
 
       const response = await request(app)
         .post('/send-email')
@@ -135,14 +129,11 @@ describe('Express Server', () => {
     });
 
     it('should validate request body', async () => {
-      const { handler } = require('../src/index');
-      handler.mockResolvedValue({
-        statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          success: false,
-          error: 'Required fields: templateName, to, data, from',
-        }),
+      const { EmailHandler } = require('../src/emailHandler');
+      const mockEmailHandler = new EmailHandler();
+      mockEmailHandler.validateEmailRequest.mockReturnValue({
+        valid: false,
+        error: 'Required fields: templateName, to, data, from',
       });
 
       const response = await request(app)

@@ -26,7 +26,7 @@ export class EmailService {
       if (!templateExists) {
         return {
           success: false,
-          error: `Template '${request.templateName}' not found`
+          error: `Template '${request.templateName}' not found`,
         };
       }
 
@@ -40,8 +40,16 @@ export class EmailService {
       const mailOptions = {
         from: request.from,
         to: Array.isArray(request.to) ? request.to.join(', ') : request.to,
-        cc: request.cc ? (Array.isArray(request.cc) ? request.cc.join(', ') : request.cc) : undefined,
-        bcc: request.bcc ? (Array.isArray(request.bcc) ? request.bcc.join(', ') : request.bcc) : undefined,
+        cc: request.cc
+          ? Array.isArray(request.cc)
+            ? request.cc.join(', ')
+            : request.cc
+          : undefined,
+        bcc: request.bcc
+          ? Array.isArray(request.bcc)
+            ? request.bcc.join(', ')
+            : request.bcc
+          : undefined,
         subject: request.subject || 'Windows License Delivery',
         html: htmlContent,
       };
@@ -51,14 +59,13 @@ export class EmailService {
 
       return {
         success: true,
-        messageId: result.messageId
+        messageId: result.messageId,
       };
-
     } catch (error) {
       console.error('Error sending email:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error sending email'
+        error: error instanceof Error ? error.message : 'Unknown error sending email',
       };
     }
   }

@@ -85,7 +85,6 @@ jobs:
         TF_VAR_smtp_secure: ${{ secrets.SMTP_SECURE }}
         TF_VAR_smtp_user: ${{ secrets.SMTP_USER }}
         TF_VAR_smtp_pass: ${{ secrets.SMTP_PASS }}
-        TF_VAR_default_from_email: ${{ secrets.DEFAULT_FROM_EMAIL }}
 
     - name: OpenTofu Apply
       run: tofu apply -auto-approve -var-file="terraform.tfvars"
@@ -96,7 +95,6 @@ jobs:
         TF_VAR_smtp_secure: ${{ secrets.SMTP_SECURE }}
         TF_VAR_smtp_user: ${{ secrets.SMTP_USER }}
         TF_VAR_smtp_pass: ${{ secrets.SMTP_PASS }}
-        TF_VAR_default_from_email: ${{ secrets.DEFAULT_FROM_EMAIL }}
 
     - name: Get Lambda Function URL
       id: get-url
