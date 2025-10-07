@@ -24,7 +24,7 @@ data "aws_region" "current" {}
 
 # IAM role for Lambda function
 resource "aws_iam_role" "lambda_role" {
-  name = "${var.project_name}-lambda-role"
+  name = "${var.project_name}-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -108,7 +108,7 @@ resource "null_resource" "install_deps" {
 # Lambda function
 resource "aws_lambda_function" "emailer" {
   filename         = data.archive_file.lambda_zip.output_path
-  function_name    = "${var.project_name}-emailer"
+  function_name    = var.project_name
   role             = aws_iam_role.lambda_role.arn
   handler          = "dist/lambda.handler"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
@@ -137,7 +137,7 @@ resource "aws_lambda_function" "emailer" {
 # Security group for Lambda (if VPC is enabled)
 resource "aws_security_group" "lambda_sg" {
   count       = var.enable_vpc ? 1 : 0
-  name        = "${var.project_name}-lambda-sg"
+  name        = "${var.project_name}-sg"
   description = "Security group for emailer Lambda function"
   vpc_id      = var.vpc_id
 
@@ -149,7 +149,7 @@ resource "aws_security_group" "lambda_sg" {
   }
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-lambda-sg"
+    Name = "${var.project_name}-sg"
   })
 }
 
