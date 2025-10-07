@@ -130,7 +130,7 @@ resource "aws_lambda_function_url" "emailer_url" {
   cors {
     allow_credentials = false
     allow_origins     = ["*"]
-    allow_methods     = ["POST", "OPTIONS"]
+    allow_methods     = ["POST"]
     allow_headers     = ["date", "keep-alive"]
     expose_headers    = ["date", "keep-alive"]
     max_age           = 86400
