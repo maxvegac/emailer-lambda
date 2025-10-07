@@ -71,13 +71,11 @@ jobs:
       working-directory: ./terraform
 
     - name: OpenTofu Init
-      run: tofu init
+      run: tofu init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" -backend-config="key=emailer/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}" -backend-config="dynamodb_table=${{ secrets.TF_STATE_LOCK_TABLE }}"
       working-directory: ./terraform
-      env:
-        TF_CLI_CONFIG_FILE: /dev/null
 
     - name: OpenTofu Plan
-      run: tofu plan -var-file="terraform.tfvars"
+      run: tofu plan
       working-directory: ./terraform
       env:
         TF_VAR_smtp_host: ${{ secrets.SMTP_HOST }}
@@ -85,9 +83,16 @@ jobs:
         TF_VAR_smtp_secure: ${{ secrets.SMTP_SECURE }}
         TF_VAR_smtp_user: ${{ secrets.SMTP_USER }}
         TF_VAR_smtp_pass: ${{ secrets.SMTP_PASS }}
+        TF_VAR_aws_region: ${{ env.AWS_REGION }}
+        TF_VAR_project_name: "emailer"
+        TF_VAR_lambda_timeout: "30"
+        TF_VAR_lambda_memory_size: "256"
+        TF_VAR_api_stage_name: "prod"
+        TF_VAR_enable_vpc: "false"
+        TF_VAR_log_retention_days: "14"
 
     - name: OpenTofu Apply
-      run: tofu apply -auto-approve -var-file="terraform.tfvars"
+      run: tofu apply -auto-approve
       working-directory: ./terraform
       env:
         TF_VAR_smtp_host: ${{ secrets.SMTP_HOST }}
@@ -95,6 +100,13 @@ jobs:
         TF_VAR_smtp_secure: ${{ secrets.SMTP_SECURE }}
         TF_VAR_smtp_user: ${{ secrets.SMTP_USER }}
         TF_VAR_smtp_pass: ${{ secrets.SMTP_PASS }}
+        TF_VAR_aws_region: ${{ env.AWS_REGION }}
+        TF_VAR_project_name: "emailer"
+        TF_VAR_lambda_timeout: "30"
+        TF_VAR_lambda_memory_size: "256"
+        TF_VAR_api_stage_name: "prod"
+        TF_VAR_enable_vpc: "false"
+        TF_VAR_log_retention_days: "14"
 
     - name: Get Lambda Function URL
       id: get-url

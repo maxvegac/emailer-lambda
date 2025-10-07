@@ -188,6 +188,25 @@ The Lambda function uses these environment variables:
 - `SMTP_USER`: SMTP username
 - `SMTP_PASS`: SMTP password
 
+### GitHub Secrets for CI/CD
+
+Configure these secrets in your GitHub repository:
+
+**AWS Configuration:**
+- `AWS_ACCESS_KEY_ID`: Your AWS access key
+- `AWS_SECRET_ACCESS_KEY`: Your AWS secret key
+
+**SMTP Configuration:**
+- `SMTP_HOST`: SMTP server hostname
+- `SMTP_PORT`: SMTP server port
+- `SMTP_SECURE`: Whether to use secure connection (true/false)
+- `SMTP_USER`: SMTP username
+- `SMTP_PASS`: SMTP password
+
+**Terraform Backend:**
+- `TF_STATE_BUCKET`: S3 bucket name for Terraform state
+- `TF_STATE_LOCK_TABLE`: DynamoDB table name for state locking
+
 ## Security Considerations
 
 - Store SMTP credentials securely using AWS Secrets Manager or environment variables
