@@ -110,7 +110,7 @@ resource "aws_lambda_function" "emailer" {
   filename         = data.archive_file.lambda_zip.output_path
   function_name    = "${var.project_name}-emailer"
   role             = aws_iam_role.lambda_role.arn
-  handler          = "lambda.handler"
+  handler          = "dist/lambda.handler"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   runtime          = "nodejs22.x"
   timeout          = var.lambda_timeout
