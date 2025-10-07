@@ -78,22 +78,22 @@ resource "null_resource" "build" {
 resource "aws_lambda_function" "emailer" {
   filename         = data.archive_file.lambda_zip.output_path
   function_name    = "${var.project_name}-emailer"
-  role            = aws_iam_role.lambda_role.arn
-  handler         = "lambda.handler"
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "lambda.handler"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  runtime         = "nodejs22.x"
-  timeout         = var.lambda_timeout
-  memory_size     = var.lambda_memory_size
+  runtime          = "nodejs22.x"
+  timeout          = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
 
-    environment {
-      variables = {
-        SMTP_HOST        = var.smtp_host
-        SMTP_PORT        = var.smtp_port
-        SMTP_SECURE      = var.smtp_secure
-        SMTP_USER        = var.smtp_user
-        SMTP_PASS        = var.smtp_pass
-      }
+  environment {
+    variables = {
+      SMTP_HOST   = var.smtp_host
+      SMTP_PORT   = var.smtp_port
+      SMTP_SECURE = var.smtp_secure
+      SMTP_USER   = var.smtp_user
+      SMTP_PASS   = var.smtp_pass
     }
+  }
 
   vpc_config {
     subnet_ids         = var.enable_vpc ? var.subnet_ids : []
@@ -133,7 +133,7 @@ resource "aws_lambda_function_url" "emailer_url" {
     allow_methods     = ["POST", "OPTIONS"]
     allow_headers     = ["date", "keep-alive"]
     expose_headers    = ["date", "keep-alive"]
-    max_age          = 86400
+    max_age           = 86400
   }
 }
 
