@@ -83,23 +83,33 @@ export class EmailHandler {
    * Validate email request
    */
   validateEmailRequest(emailRequest: unknown): { valid: boolean; error?: string } {
-    if (
-      !emailRequest.templateName ||
-      !emailRequest.to ||
-      !emailRequest.data ||
-      !emailRequest.from
-    ) {
+    // Type guard to check if emailRequest is an object
+    if (!emailRequest || typeof emailRequest !== 'object') {
+      return {
+        valid: false,
+        error: 'Request must be an object',
+      };
+    }
+
+    const request = emailRequest as Record<string, unknown>;
+
+    if (!request.templateName || !request.to || !request.data || !request.from) {
       return {
         valid: false,
         error: 'Required fields: templateName, to, data, from',
       };
     }
 
-    if (
-      !emailRequest.data.orderNumber ||
-      !emailRequest.data.customerName ||
-      !emailRequest.data.licenseKey
-    ) {
+    if (typeof request.data !== 'object' || !request.data) {
+      return {
+        valid: false,
+        error: 'Data must be an object',
+      };
+    }
+
+    const data = request.data as Record<string, unknown>;
+
+    if (!data.orderNumber || !data.customerName || !data.licenseKey) {
       return {
         valid: false,
         error: 'Required data fields: orderNumber, customerName, licenseKey',
